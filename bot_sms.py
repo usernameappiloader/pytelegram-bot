@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 from flask import Flask, request
 from twilio.rest import Client
 import os
@@ -39,13 +39,12 @@ def webhook():
     return sms_reply()
 
 def main() -> None:
-    updater = Updater(os.getenv('TELEGRAM_BOT_TOKEN'))
-    dispatcher = updater.dispatcher
+    application = ApplicationBuilder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("send_sms", send_sms))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("send_sms", send_sms))
 
-    updater.start_polling()
+    application.run_polling()
     app.run(debug=True)
 
 if __name__ == '__main__':
