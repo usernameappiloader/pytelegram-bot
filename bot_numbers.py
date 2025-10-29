@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 from twilio.rest import Client
 import os
 
@@ -16,14 +16,12 @@ def get_number(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Votre numéro est: {number.phone_number}')
 
 def main() -> None:
-    updater = Updater(os.getenv('TELEGRAM_BOT_TOKEN'))
-    dispatcher = updater.dispatcher
+    application = ApplicationBuilder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("getnumber", get_number))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("getnumber", get_number))
 
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
